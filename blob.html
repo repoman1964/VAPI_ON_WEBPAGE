@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaking Blob with Enhanced Visible Flashes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #00003f;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+
+        .blob {
+            position: absolute;
+            z-index: 10;
+            opacity: 0.75;
+            width: 400px;
+            aspect-ratio: 1/1;
+            animation: animate 10s ease-in-out infinite, pulse 2s ease-in-out infinite;
+            /* filter: blur(1px); */
+            filter: none;
+            background: linear-gradient(47deg,
+                    rgba(255, 88, 139, 1) 21%,
+                    rgb(0 164 173) 67%,
+                    rgba(118, 74, 166, 1) 81%);
+        }
+
+        .flash {
+            position: absolute;
+            border-radius: 50%;
+            background-color: white;
+            opacity: 1;
+            /* transition: opacity 0.5s; */
+            /* z-index: 10; */
+        }
+
+
+
+        @keyframes animate {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            }
+
+            33% {
+                transform: translate(-2%, -2%) rotate(5deg) scale(1.05);
+                border-radius: 50% 60% 40% 50% / 40% 50% 60% 60%;
+            }
+
+            66% {
+                transform: translate(2%, 2%) rotate(-5deg) scale(0.95);
+                border-radius: 40% 50% 60% 40% / 60% 40% 50% 50%;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                filter: blur(20px) brightness(1);
+            }
+
+            50% {
+                filter: blur(20px) brightness(1.2);
+            }
+        }
+
+        @keyframes flash {
+
+            0% {
+                opacity: 0;
+                transform: scale();
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale();
+
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="blob">
+            <div class="flash"></div>
+        </div>
+    </div>
+
+    <script>
+        const blob = document.querySelector('.blob');
+        let isSpeaking = false;
+        let speakingInterval;
+
+
+
+        function startSpeaking() {
+            isSpeaking = true;
+        }
+
+        function stopSpeaking() {
+            isSpeaking = false;
+
+        }
+
+
+    </script>
+
+    <script>
+
+        function createLight() {
+            const flash = document.createElement('div');
+            const size = Math.random() * 20 + 10; // Random size between 10 and 30
+            flash.className = 'flash';
+            flash.style.width = `${size}px`;
+            flash.style.height = `${size}px`;
+            flash.style.top = `${Math.random() * (document.querySelector('.blob').clientHeight - size)}px`;
+            flash.style.left = `${Math.random() * (document.querySelector('.blob').clientWidth - size)}px`;
+            document.querySelector('.blob').appendChild(flash); // Append flash to the container
+
+            // Randomly blink the flash
+            setInterval(() => {
+                flash.style.opacity = flash.style.opacity === '1' ? '0' : '1';
+            }, Math.random() * 1000 + 500); // Random blink interval between 500ms and 1500ms
+        }
+
+        // Create multiple lights
+        for (let i = 0; i < 20; i++) {
+            createLight();
+        }
+    </script>
+</body>
+
+</html>
