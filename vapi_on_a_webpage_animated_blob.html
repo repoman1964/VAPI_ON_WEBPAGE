@@ -1,161 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VAPI On A Web Page With Animated Blob</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
 
     <style>
-        h1 {
-            text-align: center;
+      h1 {
+        text-align: center;
+      }
+
+      .blobContainer {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        margin: 50px auto;
+        display: none;
+      }
+
+      .blob {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 150px;
+        height: 150px;
+        background-color: #000;
+        border-radius: 50%;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
         }
 
-        .blobContainer {
-            width: 200px;
-            height: 200px;
-            position: relative;
-            margin: 50px auto;
-            display: none;
+        100% {
+          transform: translate(-50%, -50%) scale(1.2);
         }
-
-        .blob {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            height: 150px;
-            background-color: #000;
-            border-radius: 50%;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>VAPI On A Web Page With Animated Blob</h1>
     <div class="blobContainer">
-        <div class="blob"></div>
+      <div class="blob"></div>
     </div>
 
     <script>
-        let vapiInstance = null;
-        const assistant = "4f171c59-5568-4068-9b49-68627df5ef8d";
-        const apiKey = "e5b480bb-ef0b-40b3-9de6-9069088d7bce";
-        const buttonConfig = {};
+      let vapiInstance = null;
+      const assistant = "your VAPI assistant id here";
+      const apiKey = "your VAPI public key here";
+      const buttonConfig = {};
 
-        let blob;
-        let isCallInProgress = false;
-        let animationFrameId;
+      let blob;
+      let isCallInProgress = false;
+      let animationFrameId;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            blob = document.querySelector('.blob');
-            initializeVapi();
-        });
+      document.addEventListener("DOMContentLoaded", function () {
+        blob = document.querySelector(".blob");
+        initializeVapi();
+      });
 
-        function initializeVapi() {
-            (function (d, t) {
-                var g = document.createElement(t),
-                    s = d.getElementsByTagName(t)[0];
-                g.src = "vapi_sdk.js";
-                g.defer = true;
-                g.async = true;
-                s.parentNode.insertBefore(g, s);
+      function initializeVapi() {
+        (function (d, t) {
+          var g = document.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+          g.src = "vapi_sdk.js";
+          g.defer = true;
+          g.async = true;
+          s.parentNode.insertBefore(g, s);
 
-                g.onload = function () {
-                    vapiInstance = window.vapiSDK.run({
-                        apiKey: apiKey,
-                        assistant: assistant,
-                        config: buttonConfig,
-                    });
+          g.onload = function () {
+            vapiInstance = window.vapiSDK.run({
+              apiKey: apiKey,
+              assistant: assistant,
+              config: buttonConfig,
+            });
 
-                    vapiInstance.on("call-start", () => {
-                        document.querySelector('.blobContainer').style.display = 'block';
-                        console.log("Call has started.");
-                    });
+            vapiInstance.on("call-start", () => {
+              document.querySelector(".blobContainer").style.display = "block";
+              console.log("Call has started.");
+            });
 
-                    vapiInstance.on("speech-start", () => {
-                        console.log("Speech has started.");
-                        isCallInProgress = true;
-                        startBlobAnimation();
-                    });
+            vapiInstance.on("speech-start", () => {
+              console.log("Speech has started.");
+              isCallInProgress = true;
+              startBlobAnimation();
+            });
 
-                    vapiInstance.on("volume-level", (volume) => {
-                        updateBlobSize(volume);
-                    });
+            vapiInstance.on("volume-level", (volume) => {
+              updateBlobSize(volume);
+            });
 
-                    vapiInstance.on("speech-end", () => {
-                        isCallInProgress = false;
-                        stopBlobAnimation();
-                    });
+            vapiInstance.on("speech-end", () => {
+              isCallInProgress = false;
+              stopBlobAnimation();
+            });
 
-                    vapiInstance.on("call-end", () => {
-                        console.log("Call has ended.");
-                        document.querySelector('.blobContainer').style.display = 'none';
-                    });
-                };
-            })(document, "script");
+            vapiInstance.on("call-end", () => {
+              console.log("Call has ended.");
+              document.querySelector(".blobContainer").style.display = "none";
+            });
+          };
+        })(document, "script");
+      }
+
+      function startBlobAnimation() {
+        if (!animationFrameId) {
+          animateBlob();
         }
+      }
 
-        function startBlobAnimation() {
-            if (!animationFrameId) {
-                animateBlob();
-            }
+      function stopBlobAnimation() {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+        resetBlobSize();
+      }
+
+      function animateBlob() {
+        if (isCallInProgress) {
+          animationFrameId = requestAnimationFrame(animateBlob);
         }
+      }
 
-        function stopBlobAnimation() {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-            resetBlobSize();
+      function updateBlobSize(volume) {
+        const minSize = 150;
+        const maxSize = 200;
+        const newSize = minSize + (maxSize - minSize) * volume;
+
+        // Update blob size
+        blob.style.width = `${newSize}px`;
+        blob.style.height = `${newSize}px`;
+
+        // Update shadow based on volume
+        const shadowSize = 50 + 30 * volume; // Adjust shadow size based on volume
+        const shadowIntensity = 0.5 + 1 * volume; // Adjust shadow intensity based on volume
+        // Revert to no shadow when volume is close to zero
+        if (volume > 0.05) {
+          blob.style.boxShadow = `0 0 ${shadowSize}px rgba(255, 0, 0, ${shadowIntensity})`;
+        } else {
+          blob.style.boxShadow = "none"; // Remove shadow when volume is low
         }
+      }
 
-        function animateBlob() {
-            if (isCallInProgress) {
-                animationFrameId = requestAnimationFrame(animateBlob);
-            }
-        }
-
-        function updateBlobSize(volume) {
-            const minSize = 150;
-            const maxSize = 200;
-            const newSize = minSize + (maxSize - minSize) * volume;
-
-            // Update blob size
-            blob.style.width = `${newSize}px`;
-            blob.style.height = `${newSize}px`;
-
-            // Update shadow based on volume
-            const shadowSize = 50 + (30 * volume); // Adjust shadow size based on volume
-            const shadowIntensity = 0.5 + (1 * volume); // Adjust shadow intensity based on volume
-            // Revert to no shadow when volume is close to zero
-            if (volume > 0.05) {
-                blob.style.boxShadow = `0 0 ${shadowSize}px rgba(255, 0, 0, ${shadowIntensity})`;
-            } else {
-                blob.style.boxShadow = 'none'; // Remove shadow when volume is low
-            }
-        }
-
-        function resetBlobSize() {
-            blob.style.width = '150px';
-            blob.style.height = '150px';
-        }
+      function resetBlobSize() {
+        blob.style.width = "150px";
+        blob.style.height = "150px";
+      }
     </script>
-</body>
-
+  </body>
 </html>
